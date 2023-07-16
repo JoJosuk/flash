@@ -18,6 +18,7 @@ mod extmod;
 use extmod::filenames::printdirectories;
 mod testwalkdir;
 use testwalkdir::create_file_cache;
+use testwalkdir::write_cache_to_file;
 
 fn main() {
     let root_dirs = [
@@ -27,11 +28,11 @@ fn main() {
     ];
 
     let file_cache = create_file_cache(&root_dirs);
-    for (file_name, file_paths) in file_cache {
-        println!("File: {}", file_name);
-        for path in file_paths {
-            println!("  - Path: {}", path);
-        }
+
+    if let Err(err) = write_cache_to_file(&file_cache) {
+        eprintln!("Failed to write file cache: {}", err);
+    } else {
+        println!("File cache has been written successfully.");
     }
     printdirectories();
     tauri::Builder::default()
